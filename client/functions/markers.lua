@@ -71,6 +71,7 @@ CreateThread(function()
 
     -- THREAD THAT HANDLES NEARBY MARKERS
     CreateThread(function()
+        -- maybe a grid system would be better ¯\_(ツ)_/¯
         while true do
             Wait(2500)
             local startTime = GetGameTimer()
@@ -171,8 +172,4 @@ AddEventHandler("onResourceStop", function(resourceName)
             print(string.format("Removed %i marker%s due to resource %s stopping.", markersRemoved, markersRemoved > 1 and "s" or "", resourceName))
         end
     end
-end)
-
-RegisterCommand("saveMarkers", function()
-    TriggerServerEvent("loaf_lib:saveMarkers", markers)
 end)

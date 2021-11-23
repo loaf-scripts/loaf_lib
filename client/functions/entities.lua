@@ -44,7 +44,7 @@ functions.GetEntities = function(entities)
 
     local toReturn = {}
     for _, type in pairs(entities) do
-        table.insert(toReturn, cachedEntities[type].entities)
+        toReturn[type] = cachedEntities[type].entities
     end
     return {success=true, entities=toReturn}
 end
