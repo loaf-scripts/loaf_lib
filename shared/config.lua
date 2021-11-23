@@ -1,5 +1,5 @@
 Config = {
-    HelpTextStyle = "gta", --[[
+    HelpTextStyle = "luke", --[[
         valid options: 
             * luke - https://forum.cfx.re/t/standalone-free-text-ui/3987367
             * cd - https://forum.cfx.re/t/free-release-draw-text-ui/1885313

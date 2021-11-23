@@ -1,21 +1,8 @@
 local markers, amountMarkers = {}, 0
 
-local function GenerateMarkerId()
-    local id = ""
-    for i = 1, 15 do
-        id = id .. (math.random(1, 2) == 1 and string.char(math.random(97, 122)) or tostring(math.random(0,9)))
-    end
-
-    if not markers[id] then
-        return id
-    else
-        return GenerateMarkerId()
-    end
-end
-
 -- ADD MARKER
 functions.AddMarker = function(markerData, onEnter, onExit, onPress)    
-    local markerId = GenerateMarkerId()
+    local markerId = functions.GenerateUniqueKey(markers)
     
     markerData.id = markerId
 

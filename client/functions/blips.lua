@@ -1,20 +1,7 @@
 local blips = {}
 
-local function GenerateBlipId()
-    local id = ""
-    for i = 1, 15 do
-        id = id .. (math.random(1, 2) == 1 and string.char(math.random(97, 122)) or tostring(math.random(0,9)))
-    end
-
-    if not blips[id] then
-        return id
-    else
-        return GenerateBlipId()
-    end
-end
-
 functions.AddBlip = function(blipData)
-    local id = GenerateBlipId()
+    local id = functions.GenerateUniqueKey(blips)
 
     local blip = AddBlipForCoord(blipData.coords or vector3(0.0, 0.0, 0.0))
     SetBlipSprite(blip, blipData.sprite or 1)

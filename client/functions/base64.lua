@@ -1,13 +1,5 @@
 local requests = {}
 
-local function GenerateId()
-    local id = ""
-    for i = 1, 15 do
-        id = id .. (math.random(1, 2) == 1 and string.char(math.random(97, 122)) or tostring(math.random(0,9)))
-    end
-    return id
-end
-
 local function ClearHeadshots()
     for i = 1, 32 do
         if IsPedheadshotValid(i) then 
@@ -38,7 +30,7 @@ functions.GetBase64 = function(ped)
     if not ped then ped = PlayerPedId() end
     local headshot = GetHeadshot(ped)
     if headshot.success then
-        local requestId = GenerateId()
+        local requestId = functions.GenerateUniqueKey(requests)
         requests[requestId] = nil
         SendNUIMessage({
             type = "convert_base64",
