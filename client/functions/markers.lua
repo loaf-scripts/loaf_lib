@@ -143,9 +143,7 @@ CreateThread(function()
 
                     if markerData.key and insideMarkers[markerId] then
                         if functions.IsKeyJustReleased(markerData.key) then
-                            if markers[markerId].callbacks.onPress then 
-                                markers[markerId].callbacks.onPress(markerData.callbackData.press, markerData)
-                            end
+                            TriggerEvent("loaf_lib:usedMarker", markerId)
                         end
                     end
                 end
@@ -156,6 +154,14 @@ CreateThread(function()
             end
         end
         insideMarkers = {}
+    end
+end)
+
+RegisterNetEvent("loaf_lib:usedMarker")
+AddEventHandler("loaf_lib:usedMarker", function(markerId)
+    local markerData = markers[markerId]
+    if markerData and markerData.callbacks.onPress then 
+        markerData.callbacks.onPress(markerData.data.callbackData.press, markerData.data)
     end
 end)
 

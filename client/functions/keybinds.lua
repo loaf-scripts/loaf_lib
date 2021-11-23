@@ -1,8 +1,6 @@
 -- https://forum.cfx.re/t/create-get-key-mapping/2260585/2
 -- http://tools.povers.fr/hashgenerator/
-local keysPressed = {}
 local registeredKeys = {}
-local keysReleased = {}
 
 functions.AddKey = function(name, keyData)
     name = string.lower(name)
@@ -17,20 +15,24 @@ functions.AddKey = function(name, keyData)
         registeredKeys[name] = {
             command = command,
             instructional = "~INPUT_"..hex.."~",
-            default = keyData.defaultKey
+            default = keyData.defaultKey,
+            status = {
+                pressed = false,
+                justReleased = false
+            }
         }
 
         -- ON KEY PRESS
         RegisterCommand("+" .. command, function()
-            keysPressed[name] = true -- SET PRESSED
+            registeredKeys[name].status.pressed = true -- SET PRESSED
         end)
         -- ON KEY RELEASE
         RegisterCommand("-" .. command, function()
-            keysPressed[name] = false -- NO LONGER PRESSED
+            registeredKeys[name].status.pressed = false -- NO LONGER PRESSED
             
-            keysReleased[name] = true -- SET JUST RELEASED
+            registeredKeys[name].status.justReleased = true -- SET JUST RELEASED
             Wait(1) -- WAIT 1 FRAME
-            keysReleased[name] = false -- NO LONGER JUST RELEASED
+            registeredKeys[name].status.justReleased = false -- NO LONGER JUST RELEASED
         end, false)
         RegisterKeyMapping("+" .. command, keyData.description, "keyboard", keyData.defaultKey)
         return true
@@ -52,11 +54,11 @@ functions.GetInstructional = function(name)
 end
 
 functions.IsKeyPressed = function(name)
-    return keysPressed[name] == true
+    return registeredKeys[name].status.pressed == true
 end
 
 functions.IsKeyJustReleased = function(name)
-    return keysReleased[name] == true
+    return registeredKeys[name].status.justReleased == true
 end
 
 for name, keyData in pairs(Config.Keybindings) do
