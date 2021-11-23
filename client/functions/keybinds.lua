@@ -1,5 +1,6 @@
 -- https://forum.cfx.re/t/create-get-key-mapping/2260585/2
 -- http://tools.povers.fr/hashgenerator/
+-- https://discord.com/channels/192358910387159041/433008322732490778/849605181589946379
 local registeredKeys = {}
 
 functions.AddKey = function(name, keyData)
@@ -15,6 +16,8 @@ functions.AddKey = function(name, keyData)
         registeredKeys[name] = {
             command = command,
             instructional = "~INPUT_"..hex.."~",
+            joaat = hash,
+            joaat_hex = hex,
             default = keyData.defaultKey,
             status = {
                 pressed = false,
@@ -35,6 +38,7 @@ functions.AddKey = function(name, keyData)
             registeredKeys[name].status.justReleased = false -- NO LONGER JUST RELEASED
         end, false)
         RegisterKeyMapping("+" .. command, keyData.description, "keyboard", keyData.defaultKey)
+        
         return true
     else
         return false

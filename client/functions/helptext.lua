@@ -19,7 +19,7 @@ CreateThread(function()
             if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" then
                 text = functions.GetInstructional(key) .. " " .. text
             else
-                text = string.format("[%s (default %s)] %s", key, functions.GetKey(key).default, text)
+                text = string.format("[%s] %s", string.gsub(GetControlInstructionalButton(0, functions.GetKey(key).joaat, 1), "t_", ""), text)
             end
         end
         currentHelptext = text
