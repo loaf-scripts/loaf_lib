@@ -5,7 +5,10 @@ client_scripts {
     "client/*.lua",
     "client/functions/*.lua"
 }
-server_script "server/*.lua"
+server_scripts {
+    "server/*.lua",
+    "server/functions/*.lua"
+}
 shared_script "shared/*.lua"
 
 files {
