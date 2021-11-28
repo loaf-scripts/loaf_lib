@@ -26,7 +26,7 @@ local function GetHeadshot(ped)
     end
 end
 
-functions.GetBase64 = function(ped)
+function functions.GetBase64(ped)
     if not ped then ped = PlayerPedId() end
     local headshot = GetHeadshot(ped)
     if headshot.success then

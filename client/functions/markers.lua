@@ -1,7 +1,7 @@
 local markers, amountMarkers = {}, 0
 
 -- ADD MARKER
-functions.AddMarker = function(markerData, onEnter, onExit, onPress)    
+function functions.AddMarker(markerData, onEnter, onExit, onPress)    
     local markerId = functions.GenerateUniqueKey(markers)
     
     markerData.id = markerId
@@ -29,7 +29,7 @@ functions.AddMarker = function(markerData, onEnter, onExit, onPress)
 end
 
 -- REMOVE MARKER
-functions.RemoveMarker = function(markerId)
+function functions.RemoveMarker(markerId)
     if markers[markerId] then 
         markers[markerId] = nil
         amountMarkers = amountMarkers - 1
@@ -39,12 +39,12 @@ functions.RemoveMarker = function(markerId)
 end
 
 -- GET MARKER
-functions.GetMarker = function(markerId)
+function functions.GetMarker(markerId)
     return markers[markerId]
 end
 
 -- GET MARKERS
-functions.GetMarkers = function()
+function functions.GetMarkers()
     return markers
 end
 
@@ -52,7 +52,7 @@ end
 CreateThread(function()
     local nearbyMarkers, insideMarkers = {}, {}
 
-    functions.IsInMarker = function(markerId)
+    function functions.IsInMarker(markerId)
         return insideMarkers[markerId] == true
     end
 

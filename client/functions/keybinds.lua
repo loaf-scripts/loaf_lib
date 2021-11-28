@@ -3,7 +3,7 @@
 -- https://discord.com/channels/192358910387159041/433008322732490778/849605181589946379
 local registeredKeys = {}
 
-functions.AddKey = function(name, keyData)
+function functions.AddKey(name, keyData)
     name = string.lower(name)
     if not registeredKeys[name] then
         local command = string.format("use_%s_key", name)
@@ -45,11 +45,11 @@ functions.AddKey = function(name, keyData)
     end
 end
 
-functions.GetKey = function(name)
+function functions.GetKey(name)
     return registeredKeys[name]
 end
 
-functions.GetInstructional = function(name)
+function functions.GetInstructional(name)
     if registeredKeys[name] then
         return registeredKeys[name].instructional
     else
@@ -57,11 +57,11 @@ functions.GetInstructional = function(name)
     end
 end
 
-functions.IsKeyPressed = function(name)
+function functions.IsKeyPressed(name)
     return registeredKeys[name].status.pressed == true
 end
 
-functions.IsKeyJustReleased = function(name)
+function functions.IsKeyJustReleased(name)
     return registeredKeys[name].status.justReleased == true
 end
 

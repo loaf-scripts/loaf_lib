@@ -1,6 +1,6 @@
 local blips = {}
 
-functions.AddBlip = function(blipData)
+function functions.AddBlip(blipData)
     local id = functions.GenerateUniqueKey(blips)
 
     local blip = AddBlipForCoord(blipData.coords or vector3(0.0, 0.0, 0.0))
@@ -21,7 +21,7 @@ functions.AddBlip = function(blipData)
     return id
 end
 
-functions.RemoveBlip = function(blipId)
+function functions.RemoveBlip(blipId)
     if blips[blipId] then
         RemoveBlip(blips[blipId].blip)
         blips[blipId] = nil

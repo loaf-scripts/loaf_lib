@@ -1,7 +1,7 @@
 local currentHelptext, currentCoords
 
 CreateThread(function()
-    functions.HideHelpText = function()
+    function functions.HideHelpText()
         if currentHelptext then 
             if Config.HelpTextStyle == "luke" then
                 TriggerEvent("luke_textui:HideUI")
@@ -13,7 +13,7 @@ CreateThread(function()
         currentHelptext = nil
     end
 
-    functions.DrawHelpText = function(text, coords, key)
+    function functions.DrawHelpText(text, coords, key)
         functions.HideHelpText()
         if key then
             if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" then

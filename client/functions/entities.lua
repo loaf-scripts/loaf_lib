@@ -7,7 +7,7 @@ local enumNatives = {
 
 local cachedEntities = {}
 
-functions.GetEntities = function(entities)
+function functions.GetEntities(entities)
     if type(entities) ~= "table" then
         entities = {entities}
     end

@@ -1,4 +1,4 @@
-functions.LoadAnimDict = function(dict)
+function functions.LoadAnimDict(dict)
     if DoesAnimDictExist(dict) then
         local timer = GetGameTimer() + 20000
 
@@ -15,7 +15,7 @@ functions.LoadAnimDict = function(dict)
     return {success=false, error="Anim dict " .. dict ..  " does not exist."}
 end
 
-functions.LoadModel = function(model)
+function functions.LoadModel(model)
     model = type(model) == "string" and GetHashKey(model) or model
 
     if IsModelInCdimage(model) then
@@ -34,7 +34,7 @@ functions.LoadModel = function(model)
     return {success=false, error="Model " .. model .. " does not exist (not in cd image)."}
 end
 
-functions.CopyText = function(text)
+function functions.CopyText(text)
     if text and type(text) == "string" then
         SendNUIMessage({
             type = "copy_text",
@@ -46,7 +46,7 @@ functions.CopyText = function(text)
 end
 
 
-functions.GenerateString = function(length)
+function functions.GenerateString(length)
     local id = ""
     for i = 1, length or 15 do
         id = id .. (math.random(1, 2) == 1 and string.char(math.random(97, 122)) or tostring(math.random(0,9)))
@@ -54,7 +54,7 @@ functions.GenerateString = function(length)
     return id
 end
 
-functions.GenerateUniqueKey = function(t, length)
+function functions.GenerateUniqueKey(t, length)
     local id = functions.GenerateString(length)
 
     if not t[id] then
