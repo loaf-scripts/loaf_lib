@@ -1,5 +1,6 @@
 local currentHelptext, currentCoords, width, height
 local fontSize = 0.35
+local wrap = 0.2
 
 CreateThread(function()
     function functions.HideHelpText()
@@ -19,6 +20,8 @@ CreateThread(function()
         if key then
             if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" then
                 text = functions.GetInstructional(key) .. " " .. text
+            elseif Config.HelpTextStyle == "3d" then
+                text = string.format("~b~[~s~%s~b~]~s~ %s", string.gsub(GetControlInstructionalButton(0, functions.GetKey(key).joaat, 1), "t_", ""), text)
             else
                 text = string.format("[%s] %s", string.gsub(GetControlInstructionalButton(0, functions.GetKey(key).joaat, 1), "t_", ""), text)
             end
@@ -35,23 +38,29 @@ CreateThread(function()
 
     if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" or Config.HelpTextStyle == "3d" then
         if Config.HelpTextStyle == "3d" and Config.UseExperimental3D then
+            local startFontSize = fontSize
             CreateThread(function()
                 while true do
                     Wait(250)
 
                     while currentHelptext do
-                        Wait(10)
+                        -- calculate font size
                         local fov = GetGameplayCamFov()
                         local camCoords = GetFinalRenderedCamCoord()
                         local dist = #(camCoords - currentCoords)
-                        local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / 0.35
+                        local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / startFontSize
                         fontSize = math.min(0.8, size)
 
-                        BeginTextCommandGetWidth(GetCurrentResourceName())
-                        SetTextScale(fontSize, fontSize)
-                        SetTextFont(4)
-                        width = EndTextCommandGetWidth(1) + 0.0015
-                        height = GetRenderedCharacterHeight(fontSize, 4) * 1.5
+                        local textSize = functions.GetTextSize({
+                            text = currentHelptext,
+                            size = fontSize,
+                            font = 4,
+                            wrap = wrap
+                        })
+                        width = textSize.x
+                        height = textSize.y
+
+                        Wait(10)
                     end
                 end
             end)
@@ -77,11 +86,14 @@ CreateThread(function()
                     elseif Config.HelpTextStyle == "3d" then
                         AddTextEntry(GetCurrentResourceName(), currentHelptext)
 
-                        BeginTextCommandGetWidth(GetCurrentResourceName())
-                        SetTextScale(0.35, 0.35)
-                        SetTextFont(4)
-                        width = EndTextCommandGetWidth(1) + 0.0015
-                        height = GetRenderedCharacterHeight(0.35, 4) * 1.5
+                        local textSize = functions.GetTextSize({
+                            text = currentHelptext,
+                            size = fontSize,
+                            font = 4,
+                            wrap = wrap
+                        })
+                        width = textSize.x
+                        height = textSize.y
                     end
 
                     while currentHelptext do
@@ -101,11 +113,12 @@ CreateThread(function()
 
                             BeginTextCommandDisplayText(GetCurrentResourceName())
                             SetTextScale(fontSize, fontSize)
+                            SetTextWrap(0.0, wrap) -- TESTING
                             SetTextCentre(1)
                             SetTextFont(4)
                             EndTextCommandDisplayText(0.0, 0.0)
 
-                            DrawRect(0.0, height/(2.5), width, height, 45, 45, 45, 150)
+                            DrawRect(0.0, height/2, math.min(wrap + 0.0015, width), height, 45, 45, 45, 150)
 
                             ClearDrawOrigin()
                         end
