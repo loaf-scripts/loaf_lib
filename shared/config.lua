@@ -1,5 +1,5 @@
 Config = {
-    HelpTextStyle = "luke", --[[
+    HelpTextStyle = "3d", --[[
         valid options: 
             * luke - https://forum.cfx.re/t/standalone-free-text-ui/3987367
             * cd - https://forum.cfx.re/t/free-release-draw-text-ui/1885313
@@ -7,6 +7,8 @@ Config = {
             * 3d-gta - https://i.gyazo.com/cfa770414d21aced89e1f3d2003813a0.png
             * 3d - https://gyazo.com/0ad2bd85b8985bc3859d4c04a6712027
     ]]
+
+    UseExperimental3D = false, -- true: 3d text will be distance based (draws a bit more cpu), false: 3d text will be the same size, no matter the distance
 
     Keybindings = {
         ["primary"] = {

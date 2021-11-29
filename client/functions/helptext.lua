@@ -1,4 +1,5 @@
-local currentHelptext, currentCoords
+local currentHelptext, currentCoords, width, height
+local fontSize = 0.35
 
 CreateThread(function()
     function functions.HideHelpText()
@@ -33,12 +34,34 @@ CreateThread(function()
     end
 
     if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" or Config.HelpTextStyle == "3d" then
+        if Config.HelpTextStyle == "3d" and Config.UseExperimental3D then
+            CreateThread(function()
+                while true do
+                    Wait(250)
+
+                    while currentHelptext do
+                        Wait(10)
+                        local fov = GetGameplayCamFov()
+                        local camCoords = GetFinalRenderedCamCoord()
+                        local dist = #(camCoords - currentCoords)
+                        local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / 0.35
+                        fontSize = math.min(0.8, size)
+
+                        BeginTextCommandGetWidth(GetCurrentResourceName())
+                        SetTextScale(fontSize, fontSize)
+                        SetTextFont(4)
+                        width = EndTextCommandGetWidth(1) + 0.0015
+                        height = GetRenderedCharacterHeight(fontSize, 4) * 1.5
+                    end
+                end
+            end)
+        end
+
         CreateThread(function()
             while true do
                 Wait(250)
 
                 if currentHelptext then
-                    local width, height
                     if Config.HelpTextStyle == "gta" then
                         AddTextEntry(GetCurrentResourceName(), currentHelptext)
                     elseif Config.HelpTextStyle == "3d-gta" then
@@ -77,12 +100,13 @@ CreateThread(function()
                             SetDrawOrigin(currentCoords)
 
                             BeginTextCommandDisplayText(GetCurrentResourceName())
-                            SetTextScale(0.35, 0.35)
+                            SetTextScale(fontSize, fontSize)
                             SetTextCentre(1)
                             SetTextFont(4)
                             EndTextCommandDisplayText(0.0, 0.0)
 
-                            DrawRect(0.0, 0.0125, width, height, 45, 45, 45, 150)
+                            DrawRect(0.0, height/(2.5), width, height, 45, 45, 45, 150)
+
                             ClearDrawOrigin()
                         end
                     end
