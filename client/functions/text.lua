@@ -1,9 +1,3 @@
---[[
-    textEntry = texts[textId].textEntry,
-    font = texts[textId].font,
-    wrap = texts[textId].wrap,
-    size = texts[textId].size
-]]
 function functions.GetTextSize(textData)
     if type(textData) ~= "table" then return vector2(0.0, 0.0) end
     
@@ -56,7 +50,7 @@ function functions.Add3DText(textData)
     if not textData.textEntry then
         AddTextEntry(textId, textData.text)
     end
-    -- texts[textId].text, texts[textId].size, texts[textId].font, wrap
+
     texts[textId].textSize = functions.GetTextSize({
         textEntry = texts[textId].textEntry,
         text = texts[textId].text,
@@ -101,40 +95,42 @@ CreateThread(function()
         end
     end)
 
-    -- THREAD THAT HANDLES TEXT DISTANCE
-    CreateThread(function()
-        while true do
-            Wait(2500)
-            while #nearbyTexts > 0 do
-                Wait(25)
-                local selfCoords = GetEntityCoords(PlayerPedId())
-                for _, textId in pairs(nearbyTexts) do
-                    if texts[textId] then
-                        local text = texts[textId]
-                        if text.distanceScale and #(selfCoords - text.coords) <= text.viewDistance then
-                            -- calculate font size
-                            local fov = GetGameplayCamFov()
-                            local camCoords = GetFinalRenderedCamCoord()
-                            local dist = #(camCoords - text.coords)
-                            local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / text.initialSize
-                            
-                            text.size = math.min(0.8, size)
+    if Config.Distancescale3DText then
+        -- THREAD THAT HANDLES TEXT SCALING
+        CreateThread(function()
+            while true do
+                Wait(2500)
+                while #nearbyTexts > 0 do
+                    Wait(25)
+                    local selfCoords = GetEntityCoords(PlayerPedId())
+                    for _, textId in pairs(nearbyTexts) do
+                        if texts[textId] then
+                            local text = texts[textId]
+                            if text.distanceScale and #(selfCoords - text.coords) <= text.viewDistance then
+                                -- calculate font size
+                                local fov = GetGameplayCamFov()
+                                local camCoords = GetFinalRenderedCamCoord()
+                                local dist = #(camCoords - text.coords)
+                                local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / text.initialSize
+                                
+                                text.size = math.min(0.8, size)
 
-                            text.textSize = functions.GetTextSize({
-                                textEntry = text.textEntry,
-                                text = text.text,
-                                font = text.font,
-                                wrap = text.wrap,
-                                size = text.size
-                            })
+                                text.textSize = functions.GetTextSize({
+                                    textEntry = text.textEntry,
+                                    text = text.text,
+                                    font = text.font,
+                                    wrap = text.wrap,
+                                    size = text.size
+                                })
+                            end
                         end
                     end
                 end
             end
-        end
-    end)
+        end)
+    end
 
-    -- THREAD THAT HANDLES THE DRAWING OF MARKERS
+    -- THREAD THAT HANDLES THE DRAWING OF TEXTS
     while true do
         Wait(2500)
         while #nearbyTexts > 0 do
@@ -160,7 +156,6 @@ CreateThread(function()
                 end
             end
         end
-        insideMarkers = {}
     end
 end)
 

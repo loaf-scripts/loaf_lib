@@ -37,7 +37,7 @@ CreateThread(function()
     end
 
     if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" or Config.HelpTextStyle == "3d" then
-        if Config.HelpTextStyle == "3d" and Config.UseExperimental3D then
+        if Config.HelpTextStyle == "3d" and Config.Distancescale3DText then
             local startFontSize = fontSize
             CreateThread(function()
                 while true do

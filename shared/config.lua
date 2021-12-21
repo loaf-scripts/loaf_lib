@@ -8,7 +8,7 @@ Config = {
             * 3d - https://gyazo.com/0ad2bd85b8985bc3859d4c04a6712027
     ]]
 
-    UseExperimental3D = false, -- true: 3d text will be distance based (draws a bit more cpu), false: 3d text will be the same size, no matter the distance
+    Distancescale3DText = false, -- true: 3d text will be distance based (draws a bit more cpu), false: 3d text will be the same size, no matter the distance
 
     Keybindings = {
         ["primary"] = {
