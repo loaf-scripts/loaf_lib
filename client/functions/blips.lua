@@ -9,6 +9,9 @@ function functions.AddBlip(blipData)
     SetBlipScale(blip, blipData.scale or 0.7)
     SetBlipAsShortRange(blip, blipData.shortRange or true)
     SetBlipDisplay(blip, blipData.display or 2)
+    if blipData.category then
+        SetBlipCategory(blip, blipData.category)
+    end
     
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(blipData.label or id)
