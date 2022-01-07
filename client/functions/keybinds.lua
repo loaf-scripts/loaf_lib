@@ -16,7 +16,7 @@ function functions.AddKey(name, keyData)
         registeredKeys[name] = {
             command = command,
             instructional = "~INPUT_"..hex.."~",
-            joaat = hash,
+            joaat = hash | 0x80000000,
             joaat_hex = hex,
             default = keyData.defaultKey,
             status = {
