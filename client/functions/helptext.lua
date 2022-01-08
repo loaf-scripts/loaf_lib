@@ -107,7 +107,7 @@ CreateThread(function()
                         Wait(0)
 
                         if Config.HelpTextStyle == "3d-gta" then
-                            BeginTextCommandDisplayHelp(GetCurrentResourceName())
+                            BeginTextCommandDisplayHelp(textEntry)
                             EndTextCommandDisplayHelp(2, false, false, -1)
         
                             SetFloatingHelpTextWorldPosition(1, currentCoords)
@@ -115,7 +115,7 @@ CreateThread(function()
                         elseif Config.HelpTextStyle == "3d" then
                             SetDrawOrigin(currentCoords)
 
-                            BeginTextCommandDisplayText(GetCurrentResourceName())
+                            BeginTextCommandDisplayText(textEntry)
                             SetTextScale(fontSize, fontSize)
                             SetTextWrap(0.0, wrap) -- TESTING
                             SetTextCentre(1)
