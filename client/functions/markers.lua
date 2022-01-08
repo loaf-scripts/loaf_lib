@@ -1,4 +1,5 @@
 local markers, amountMarkers = {}, 0
+local nearbyMarkers, insideMarkers = {}, {}
 
 -- ADD MARKER
 function functions.AddMarker(markerData, onEnter, onExit, onPress)    
@@ -31,6 +32,9 @@ end
 -- REMOVE MARKER
 function functions.RemoveMarker(markerId)
     if markers[markerId] then 
+        if insideMarkers[markerId] and markers[markerId].data.text then
+            functions.HideHelpText()
+        end
         markers[markerId] = nil
         amountMarkers = amountMarkers - 1
         return true
@@ -50,8 +54,6 @@ end
 
 -- HANDLE MARKERS
 CreateThread(function()
-    local nearbyMarkers, insideMarkers = {}, {}
-
     function functions.IsInMarker(markerId)
         return insideMarkers[markerId] == true
     end

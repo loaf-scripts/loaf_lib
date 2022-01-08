@@ -3,12 +3,17 @@ local fontSize = 0.35
 local wrap = 0.2
 
 CreateThread(function()
+    local textEntry = GetCurrentResourceName() .. "_helptext"
+    
     function functions.HideHelpText()
         if currentHelptext then 
             if Config.HelpTextStyle == "luke" then
                 TriggerEvent("luke_textui:HideUI")
             elseif Config.HelpTextStyle == "cd" then
                 TriggerEvent("cd_drawtextui:HideUI")
+            elseif Config.HelpTextStyle == "gta" then
+                ClearAllHelpMessages()
+                ClearHelp(true)
             end
         end
 
@@ -33,10 +38,14 @@ CreateThread(function()
             TriggerEvent("luke_textui:ShowUI", currentHelptext)
         elseif Config.HelpTextStyle == "cd" then
             TriggerEvent("cd_drawtextui:ShowUI", "show", currentHelptext)
+        elseif Config.HelpTextStyle == "gta" then
+            AddTextEntry(textEntry, currentHelptext)
+            BeginTextCommandDisplayHelp(textEntry)
+            EndTextCommandDisplayHelp(0, true, true, 0)
         end
     end
 
-    if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" or Config.HelpTextStyle == "3d" then
+    if Config.HelpTextStyle == "3d-gta" or Config.HelpTextStyle == "3d" then
         if Config.HelpTextStyle == "3d" and Config.Distancescale3DText then
             local startFontSize = fontSize
             CreateThread(function()
@@ -71,9 +80,7 @@ CreateThread(function()
                 Wait(250)
 
                 if currentHelptext then
-                    if Config.HelpTextStyle == "gta" then
-                        AddTextEntry(GetCurrentResourceName(), currentHelptext)
-                    elseif Config.HelpTextStyle == "3d-gta" then
+                    if Config.HelpTextStyle == "3d-gta" then
                         local str = currentHelptext
                         local start, stop = string.find(currentHelptext, "~([^~]+)~")
                         if start and start > 1 then
@@ -82,9 +89,9 @@ CreateThread(function()
                             str = ""
                             str = str .. string.sub(currentHelptext, 0, start) .. string.rep(" ", 3) .. string.sub(currentHelptext, start+2, stop-2) .. string.sub(currentHelptext, stop, #currentHelptext)
                         end
-                        AddTextEntry(GetCurrentResourceName(), str)
+                        AddTextEntry(textEntry, str)
                     elseif Config.HelpTextStyle == "3d" then
-                        AddTextEntry(GetCurrentResourceName(), currentHelptext)
+                        AddTextEntry(textEntry, currentHelptext)
 
                         local textSize = functions.GetTextSize({
                             text = currentHelptext,
@@ -99,10 +106,7 @@ CreateThread(function()
                     while currentHelptext do
                         Wait(0)
 
-                        if Config.HelpTextStyle == "gta" then
-                            BeginTextCommandDisplayHelp(GetCurrentResourceName())
-                            EndTextCommandDisplayHelp(0, 0, true, -1)
-                        elseif Config.HelpTextStyle == "3d-gta" then
+                        if Config.HelpTextStyle == "3d-gta" then
                             BeginTextCommandDisplayHelp(GetCurrentResourceName())
                             EndTextCommandDisplayHelp(2, false, false, -1)
         
