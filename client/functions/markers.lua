@@ -104,9 +104,9 @@ CreateThread(function()
                     )
                     
                     if checkInside <= GetGameTimer() then
-                        local bottomLeft = vector3(markerData.coords.x - markerData.scale.x/2, markerData.coords.y - markerData.scale.y/2, markerData.coords.z)
-                        local topRight = vector3(markerData.coords.x + markerData.scale.x/2, markerData.coords.y + markerData.scale.y/2, markerData.coords.z + markerData.scale.z)
-                        local insideMarker = IsEntityInArea(PlayerPedId(), bottomLeft, topRight)
+                        local bottomLeft = vector3(markerData.coords.x - markerData.scale.x/2, markerData.coords.y - markerData.scale.y/2, markerData.coords.z - markerData.scale.z)
+                        local topRight = vector3(markerData.coords.x + markerData.scale.x/2, markerData.coords.y + markerData.scale.y/2, markerData.coords.z + 1.5)
+                        local insideMarker = IsEntityInArea(PlayerPedId(), bottomLeft, topRight, false, true, 0)
 
                         if insideMarker then
                             if not insideMarkers[markerId] then
