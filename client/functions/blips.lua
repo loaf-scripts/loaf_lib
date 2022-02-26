@@ -24,6 +24,10 @@ function functions.AddBlip(blipData)
     return id
 end
 
+function functions.GetBlip(blipId)
+    return blips[blipId]
+end
+
 function functions.RemoveBlip(blipId)
     if blips[blipId] then
         RemoveBlip(blips[blipId].blip)
@@ -37,7 +41,7 @@ AddEventHandler("onResourceStop", function(resourceName)
         for blipId, blipData in pairs(blips) do
             if blipData.creator == resourceName then
                 functions.RemoveBlip(blipId)
-                blipsRemoved = blipsRemoved + 1
+                blipsRemoved += 1
             end
         end
         if blipsRemoved > 0 then

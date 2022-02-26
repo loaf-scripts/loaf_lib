@@ -36,7 +36,7 @@ function functions.RemoveMarker(markerId)
             functions.HideHelpText()
         end
         markers[markerId] = nil
-        amountMarkers = amountMarkers - 1
+        amountMarkers -= 1
         return true
     end
     return false
@@ -128,12 +128,6 @@ CreateThread(function()
                             end
                         end
                     end
-
-                    if markerData.key and insideMarkers[markerId] then
-                        if functions.IsKeyJustReleased(markerData.key) then
-                            TriggerEvent("loaf_lib:usedMarker", markerId)
-                        end
-                    end
                 end
             end
 
@@ -145,11 +139,22 @@ CreateThread(function()
     end
 end)
 
-RegisterNetEvent("loaf_lib:usedMarker")
-AddEventHandler("loaf_lib:usedMarker", function(markerId)
-    local markerData = markers[markerId]
-    if markerData and markerData.callbacks.onPress then 
-        markerData.callbacks.onPress(markerData.data.callbackData.press, markerData.data)
+RegisterNetEvent("loaf_lib:releasedKey", function(keyName)
+    for markerId, inside in pairs(insideMarkers) do
+        if not inside then 
+            goto continue
+        end
+
+        local markerData = markers[markerId]
+        if markerData?.data?.key ~= keyName then
+            goto continue
+        end
+
+        if markerData and markerData.callbacks.onPress then 
+            markerData.callbacks.onPress(markerData.data.callbackData.press, markerData.data)
+        end
+
+        ::continue::
     end
 end)
 
@@ -159,7 +164,7 @@ AddEventHandler("onResourceStop", function(resourceName)
         for markerId, markerData in pairs(markers) do
             if markerData.creator == resourceName then
                 functions.RemoveMarker(markerId)
-                markersRemoved = markersRemoved + 1
+                markersRemoved += 1
             end
         end
         if markersRemoved > 0 then

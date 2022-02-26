@@ -28,9 +28,11 @@ function functions.AddKey(name, keyData)
         -- ON KEY PRESS
         RegisterCommand("+" .. command, function()
             registeredKeys[name].status.pressed = true -- SET PRESSED
+            TriggerEvent("loaf_lib:pressedKey", name)
         end)
         -- ON KEY RELEASE
         RegisterCommand("-" .. command, function()
+            TriggerEvent("loaf_lib:releasedKey", name)
             registeredKeys[name].status.pressed = false -- NO LONGER PRESSED
             
             registeredKeys[name].status.justReleased = true -- SET JUST RELEASED

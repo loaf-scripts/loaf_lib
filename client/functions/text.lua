@@ -165,7 +165,7 @@ AddEventHandler("onResourceStop", function(resourceName)
         for textId, textData in pairs(texts) do
             if textData.creator == resourceName then
                 functions.Remove3DText(markerId)
-                textsRemoved = textsRemoved + 1
+                textsRemoved += 1
             end
         end
         if textsRemoved > 0 then
