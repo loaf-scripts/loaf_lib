@@ -151,11 +151,16 @@ RegisterNetEvent("loaf_lib:releasedKey", function(keyName)
         end
 
         if markerData and markerData.callbacks.onPress then 
-            markerData.callbacks.onPress(markerData.data.callbackData.press, markerData.data)
+            TriggerEvent("loaf_lib:usedMarker", markerId)
         end
 
         ::continue::
     end
+end)
+
+RegisterNetEvent("loaf_lib:usedMarker", function(markerId)
+    local markerData = markers[markerId]
+    markerData.callbacks.onPress(markerData.data.callbackData.press, markerData.data)
 end)
 
 AddEventHandler("onResourceStop", function(resourceName)
