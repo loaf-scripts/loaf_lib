@@ -9,6 +9,8 @@ Config = {
     ]]
 
     Distancescale3DText = false, -- true: 3d text will be distance based (draws a bit more cpu), false: 3d text will be the same size, no matter the distance
+    DrawDistance = 100.0, -- marker draw distance
+    DefaultColour = {125, 75, 195, 100}, -- default marker colour, r, g, b, a
 
     Keybindings = {
         ["primary"] = {

@@ -1,3 +1,6 @@
+local texts, amountTexts = {}, 0
+local nearbyTexts = {}
+
 function functions.GetTextSize(textData)
     if type(textData) ~= "table" then return vector2(0.0, 0.0) end
     
@@ -28,8 +31,6 @@ function functions.GetTextSize(textData)
     return vector2(width, height)
 end
 
-local texts = {}
-
 -- ADD MARKER
 function functions.Add3DText(textData)    
     local textId = functions.GenerateUniqueKey(texts)
@@ -48,7 +49,7 @@ function functions.Add3DText(textData)
     }
 
     if not textData.textEntry then
-        AddTextEntry(textId, textData.text)
+        AddTextEntry(textId, texts[textId].text)
     end
 
     texts[textId].textSize = functions.GetTextSize({
@@ -58,6 +59,8 @@ function functions.Add3DText(textData)
         wrap = texts[textId].wrap,
         size = texts[textId].size
     })
+
+    amountTexts += 1
     return textId
 end
 
@@ -65,74 +68,79 @@ end
 function functions.Remove3DText(textId)
     if texts[textId] then 
         texts[textId] = nil
+        amountTexts -= 1
         return true
     end
     return false
 end
 
--- HANDLE 3D TEXTS
+-- check for nearby 3d texts
 CreateThread(function()
-    local nearbyTexts = {}
+    local lastCoords, lastAmount = vector3(0.0, 0.0, 0.0), 0
 
-    -- THREAD THAT HANDLES NEARBY 3D TEXTS
-    CreateThread(function()
-        -- maybe a grid system would be better ¯\_(ツ)_/¯
-        while true do
-            Wait(2500)
-            local startTime = GetGameTimer()
+    while true do
+        Wait(500)
+        local selfCoords = GetEntityCoords(PlayerPedId())
+
+        if #(lastCoords - selfCoords) > 5.0 or lastAmount ~= amountTexts then
+            lastCoords = selfCoords
+            lastAmount = amountTexts
 
             local newNearby = {}
-            local selfCoords = GetEntityCoords(PlayerPedId())
             for textId, textData in pairs(texts) do
-                if textData and #(selfCoords - textData.coords) <= 150.0 then
-                    table.insert(newNearby, textId)
+                if textData and #(selfCoords - textData.coords) <= (Config.DrawDistance or 150.0) then
+                    newNearby[#newNearby + 1] = textId
                 end
-                Wait(5) -- wait increases performance quite a bit, no wait = a lot of cpu usage BUT really fast
+                Wait(0)
             end
-
+            
             nearbyTexts = newNearby
-            collectgarbage()
         end
-    end)
+    end
+end)
 
-    if Config.Distancescale3DText then
-        -- THREAD THAT HANDLES TEXT SCALING
-        CreateThread(function()
-            while true do
-                Wait(2500)
-                while #nearbyTexts > 0 do
-                    Wait(25)
-                    local selfCoords = GetEntityCoords(PlayerPedId())
-                    for _, textId in pairs(nearbyTexts) do
-                        if texts[textId] then
-                            local text = texts[textId]
-                            if text.distanceScale and #(selfCoords - text.coords) <= text.viewDistance then
-                                -- calculate font size
-                                local fov = GetGameplayCamFov()
-                                local camCoords = GetFinalRenderedCamCoord()
-                                local dist = #(camCoords - text.coords)
-                                local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / text.initialSize
-                                
-                                text.size = math.min(0.8, size)
+CreateThread(function()
+    if not Config.Distancescale3DText then
+        return
+    end
 
-                                text.textSize = functions.GetTextSize({
-                                    textEntry = text.textEntry,
-                                    text = text.text,
-                                    font = text.font,
-                                    wrap = text.wrap,
-                                    size = text.size
-                                })
-                            end
-                        end
+    while true do
+        Wait(500)
+
+        while #nearbyTexts > 0 do
+            Wait(25)
+            local selfCoords = GetEntityCoords(PlayerPedId())
+            for _, textId in pairs(nearbyTexts) do
+                if texts[textId] then
+                    local text = texts[textId]
+                    if text.distanceScale and #(selfCoords - text.coords) <= text.viewDistance then
+                        -- calculate font size
+                        local fov = GetGameplayCamFov()
+                        local camCoords = GetFinalRenderedCamCoord()
+                        local dist = #(camCoords - text.coords)
+                        local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / text.initialSize
+                        
+                        text.size = math.min(0.8, size)
+
+                        text.textSize = functions.GetTextSize({
+                            textEntry = text.textEntry,
+                            text = text.text,
+                            font = text.font,
+                            wrap = text.wrap,
+                            size = text.size
+                        })
                     end
                 end
             end
-        end)
+        end
     end
+end)
 
-    -- THREAD THAT HANDLES THE DRAWING OF TEXTS
+-- HANDLE 3D TEXTS
+CreateThread(function()
     while true do
-        Wait(2500)
+        Wait(500)
+
         while #nearbyTexts > 0 do
             Wait(0)
             local selfCoords = GetEntityCoords(PlayerPedId())
@@ -144,7 +152,7 @@ CreateThread(function()
 
                         BeginTextCommandDisplayText(text.textEntry)
                         SetTextScale(text.size, text.size)
-                        SetTextWrap(0.0, text.wrap) -- TESTING
+                        SetTextWrap(0.0, text.wrap)
                         SetTextCentre(1)
                         SetTextFont(4)
                         EndTextCommandDisplayText(0.0, 0.0)

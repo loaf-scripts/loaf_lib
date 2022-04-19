@@ -11,10 +11,10 @@ function functions.AddMarker(markerData, onEnter, onExit, onPress)
     markerData.dir = markerData.dir or vector3(0.0, 0.0, 0.0)
     markerData.rot = markerData.rot or vector3(0.0, 0.0, 0.0)
     markerData.scale = markerData.scale or vector3(1.0, 1.0, 0.5)
-    markerData.r = markerData.r or 125
-    markerData.g = markerData.g or 75
-    markerData.b = markerData.b or 195
-    markerData.alpha = markerData.alpha or 100
+    markerData.r = markerData.r or Config.DefaultColour[1]
+    markerData.g = markerData.g or Config.DefaultColour[2]
+    markerData.b = markerData.b or Config.DefaultColour[3]
+    markerData.alpha = markerData.alpha or Config.DefaultColour[4]
 
     markers[markerId] = {
         data = markerData,
@@ -25,7 +25,7 @@ function functions.AddMarker(markerData, onEnter, onExit, onPress)
         },
         creator = GetInvokingResource()
     }
-    amountMarkers = amountMarkers + 1
+    amountMarkers += 1
     return markerId
 end
 
@@ -52,87 +52,97 @@ function functions.GetMarkers()
     return markers
 end
 
--- HANDLE MARKERS
+function functions.IsInMarker(markerId)
+    return insideMarkers[markerId] == true
+end
+
+-- check for nearby markers
 CreateThread(function()
-    function functions.IsInMarker(markerId)
-        return insideMarkers[markerId] == true
-    end
+    local lastCoords, lastAmount = vector3(0.0, 0.0, 0.0), 0
 
-    -- THREAD THAT HANDLES NEARBY MARKERS
-    CreateThread(function()
-        while true do
-            Wait(2500)
-            local startTime = GetGameTimer()
+    while true do
+        Wait(500)
+        local newNearby = {}
+        local selfCoords = GetEntityCoords(PlayerPedId())
 
-            local newNearby = {}
-            local selfCoords = GetEntityCoords(PlayerPedId())
+        if #(lastCoords - selfCoords) > 5.0 or lastAmount ~= amountMarkers then
+            lastCoords = selfCoords
+            lastAmount = amountMarkers
+
+            -- local startTime = GetGameTimer()
             for markerId, markerData in pairs(markers) do
-                if markerData and #(selfCoords - markerData.data.coords) <= 150.0 then
-                    table.insert(newNearby, markerId)
+                if markerData and #(selfCoords - markerData.data.coords) <= (Config.DrawDistance or 150.0) then
+                    newNearby[#newNearby + 1] = markerId
                 end
-                Wait(5) -- wait increases performance quite a bit, no wait = a lot of cpu usage BUT really fast
+                Wait(0) -- better performance. remove to draw markers faster
             end
-
             -- print(string.format("Looping through all %i markers took %.5fs\nYou are nearby %i markers.", amountMarkers, (GetGameTimer() - startTime) / 1000, #newNearby))
 
             nearbyMarkers = newNearby
-            collectgarbage()
         end
-    end)
+    end
+end)
 
-    -- THREAD THAT HANDLES THE DRAWING OF MARKERS
+-- draw nearby markers
+CreateThread(function()
+    local lastChecked = 0
     while true do
-        Wait(2500)
-        local checkInside = 0
+        Wait(500)
+        
         while #nearbyMarkers > 0 do
             Wait(0)
             local selfCoords = GetEntityCoords(PlayerPedId())
-            for _, markerId in pairs(nearbyMarkers) do
-                if markers[markerId] then
-                    local markerData = markers[markerId].data
-                    DrawMarker(
-                        markerData.type, 
-                        markerData.coords, 
-                        markerData.dir, 
-                        markerData.rot, 
-                        markerData.scale, 
-                        markerData.r, 
-                        markerData.g, 
-                        markerData.b, 
-                        markerData.alpha, 
-                        false, false, 2, nil, nil, false
-                    )
-                    
-                    if checkInside <= GetGameTimer() then
-                        local bottomLeft = vector3(markerData.coords.x - markerData.scale.x/2, markerData.coords.y - markerData.scale.y/2, markerData.coords.z - markerData.scale.z)
-                        local topRight = vector3(markerData.coords.x + markerData.scale.x/2, markerData.coords.y + markerData.scale.y/2, markerData.coords.z + 1.5)
-                        local insideMarker = IsEntityInArea(PlayerPedId(), bottomLeft, topRight, false, true, 0)
 
-                        if insideMarker then
-                            if not insideMarkers[markerId] then
-                                insideMarkers[markerId] = true
-                                if markerData.text then
-                                    functions.DrawHelpText(markerData.text, markerData.coords + vector3(0.0, 0.0, 1.0), markerData.key)
-                                end
-                                if markers[markerId].callbacks.onEnter then
-                                    markers[markerId].callbacks.onEnter(markerData.callbackData.enter, markerData)
-                                end
-                            end
-                        elseif insideMarkers[markerId] then
-                            insideMarkers[markerId] = false
+            local shouldCheck = lastChecked < (GetGameTimer() - 250)
+            if shouldCheck then
+                lastChecked = GetGameTimer()
+            end
+            for _, markerId in pairs(nearbyMarkers) do
+                if not markers[markerId] then
+                    goto continue
+                end
+
+                local markerData = markers[markerId].data
+                DrawMarker(
+                    markerData.type, 
+                    markerData.coords, 
+                    markerData.dir, 
+                    markerData.rot, 
+                    markerData.scale, 
+                    markerData.r, 
+                    markerData.g, 
+                    markerData.b, 
+                    markerData.alpha, 
+                    false, false, 2, nil, nil, false
+                )
+                
+                if shouldCheck then
+                    local bottomLeft = vector3(markerData.coords.x - markerData.scale.x/2, markerData.coords.y - markerData.scale.y/2, markerData.coords.z - markerData.scale.z)
+                    local topRight = vector3(markerData.coords.x + markerData.scale.x/2, markerData.coords.y + markerData.scale.y/2, markerData.coords.z + 1.5)
+                    local insideMarker = IsEntityInArea(PlayerPedId(), bottomLeft, topRight, false, true, 0)
+
+                    if insideMarker then
+                        if not insideMarkers[markerId] then
+                            insideMarkers[markerId] = true
                             if markerData.text then
-                                functions.HideHelpText()
+                                functions.DrawHelpText(markerData.text, markerData.coords + vector3(0.0, 0.0, 1.0), markerData.key)
                             end
-                            if markers[markerId].callbacks.onExit then
-                                markers[markerId].callbacks.onExit(markerData.callbackData.exit, markerData)
+                            if markers[markerId].callbacks.onEnter then
+                                markers[markerId].callbacks.onEnter(markerData.callbackData.enter, markerData)
                             end
+                        end
+                    elseif insideMarkers[markerId] then
+                        insideMarkers[markerId] = false
+                        if markerData.text then
+                            functions.HideHelpText()
+                        end
+                        if markers[markerId].callbacks.onExit then
+                            markers[markerId].callbacks.onExit(markerData.callbackData.exit, markerData)
                         end
                     end
                 end
-            end
 
-            if checkInside <= GetGameTimer() then
-                checkInside = GetGameTimer() + 250
+                ::continue::
             end
         end
         insideMarkers = {}
