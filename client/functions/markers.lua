@@ -70,15 +70,18 @@ CreateThread(function()
             lastAmount = amountMarkers
 
             -- local startTime = GetGameTimer()
-            for markerId, markerData in pairs(markers) do
-                if markerData and #(selfCoords - markerData.data.coords) <= (Config.DrawDistance or 150.0) then
-                    newNearby[#newNearby + 1] = markerId
+            local _markers = markers
+            if next(_markers) then
+                for markerId, markerData in pairs(_markers) do
+                    if markerData and #(selfCoords - markerData.data.coords) <= (Config.DrawDistance or 150.0) then
+                        newNearby[#newNearby + 1] = markerId
+                    end
+                    Wait(0) -- better performance. remove to draw markers faster
                 end
-                Wait(0) -- better performance. remove to draw markers faster
-            end
-            -- print(string.format("Looping through all %i markers took %.5fs\nYou are nearby %i markers.", amountMarkers, (GetGameTimer() - startTime) / 1000, #newNearby))
+                -- print(string.format("Looping through all %i markers took %.5fs\nYou are nearby %i markers.", amountMarkers, (GetGameTimer() - startTime) / 1000, #newNearby))
 
-            nearbyMarkers = newNearby
+                nearbyMarkers = newNearby
+            end
         end
     end
 end)
