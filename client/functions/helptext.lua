@@ -10,6 +10,10 @@ function functions.HideHelpText()
             TriggerEvent("luke_textui:HideUI")
         elseif Config.HelpTextStyle == "cd" then
             TriggerEvent("cd_drawtextui:HideUI")
+        elseif Config.HelpTextStyle == "esx" then
+            TriggerEvent("ESX:HideUI")
+        elseif Config.HelpTextStyle == "qbcore" then
+            TriggerEvent("qb-core:client:HideText")
         elseif Config.HelpTextStyle == "gta" then
             ClearAllHelpMessages()
             ClearHelp(true)
@@ -37,6 +41,10 @@ function functions.DrawHelpText(text, coords, key)
         TriggerEvent("luke_textui:ShowUI", currentHelptext)
     elseif Config.HelpTextStyle == "cd" then
         TriggerEvent("cd_drawtextui:ShowUI", "show", currentHelptext)
+    elseif Config.HelpTextStyle == "esx" then
+        TriggerEvent("ESX:TextUI", currentHelptext)
+    elseif Config.HelpTextStyle == "qbcore" then
+        TriggerEvent("qb-core:client:DrawText", currentHelptext)
     elseif Config.HelpTextStyle == "gta" then
         AddTextEntry(textEntry, currentHelptext)
         BeginTextCommandDisplayHelp(textEntry)
