@@ -2,7 +2,7 @@ local function GetIdentifier(source, identifier)
     if not GetPlayerName(source) then return false end
 
     identifier = identifier .. ":"
-    for i, ident in pairs(GetPlayerIdentifiers(source)) do
+    for _, ident in pairs(GetPlayerIdentifiers(source)) do
         if string.sub(ident, 1, #identifier) == identifier then
             return string.sub(ident, #identifier + 1, #ident)
         end
@@ -14,11 +14,12 @@ local function GetPlayerPicture(source)
     if not GetPlayerName(source) then return false end
 
     local steam = GetIdentifier(source, "steam")
-    if not steam then return false end
+    if not steam then
+        return false
+    end
     local url
-    PerformHttpRequest("https://steamcommunity.com/profiles/" .. tonumber(steam, 16), function(err, text, headers) 
+    PerformHttpRequest("https://steamcommunity.com/profiles/" .. tonumber(steam, 16), function(_, text, _) 
         if not text then url = false end
-
         url = text:match('<meta name="twitter:image" content="(.-)"')
     end, "GET")
     while url == nil do
@@ -28,7 +29,9 @@ local function GetPlayerPicture(source)
 end
 
 function functions.Log(data)
-    if type(data) ~= "table" or not data.text then return end
+    if type(data) ~= "table" or not data.text then
+        return
+    end
 
     local messageData = ServerConfig.ErrorTypes[data.type or "info"] or ServerConfig.ErrorTypes.info
     local embed = {
@@ -45,10 +48,9 @@ function functions.Log(data)
 
     if data.source then
         local picture = GetPlayerPicture(data.source) or "https://winaero.com/blog/wp-content/uploads/2018/08/Windows-10-user-icon-big.png"
-        local discord = GetIdentifier(data.source, "discord")
-        
+
         local identifiers = "Identifiers:\n"
-        for i, identifier in pairs(GetPlayerIdentifiers(data.source)) do
+        for _, identifier in pairs(GetPlayerIdentifiers(data.source)) do
             if not string.find(identifier, "ip:") then
                 if string.find(identifier, "steam:") then
                     local steam = GetIdentifier(data.source, "steam")
@@ -84,8 +86,8 @@ function functions.Log(data)
     end
 
     PerformHttpRequest(data.webhook or ServerConfig.Logs[data.category or "default"] or ServerConfig.Logs.default, function(err, text, headers) end, "POST", json.encode({
-        username = data.category or "Default", 
-        embeds = {embed}, 
+        username = data.category or "Default",
+        embeds = {embed},
         avatar_url = data.avatar or "https://dunb17ur4ymx4.cloudfront.net/webstore/logos/3abb800c9903d7ba189328c8f520e76c96bf35ba.png"
     }), {["Content-Type"] = "application/json"})
 end

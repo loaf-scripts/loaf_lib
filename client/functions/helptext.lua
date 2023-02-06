@@ -5,7 +5,7 @@ local wrap = 0.2
 local textEntry = GetCurrentResourceName() .. "_helptext"
 
 function functions.HideHelpText()
-    if currentHelptext then 
+    if currentHelptext then
         if Config.HelpTextStyle == "luke" then
             TriggerEvent("luke_textui:HideUI")
         elseif Config.HelpTextStyle == "cd" then
@@ -29,9 +29,9 @@ function functions.DrawHelpText(text, coords, key)
         if Config.HelpTextStyle == "gta" or Config.HelpTextStyle == "3d-gta" then
             text = functions.GetInstructional(key) .. " " .. text
         elseif Config.HelpTextStyle == "3d" then
-            text = string.format("~b~[~s~%s~b~]~s~ %s", string.gsub(GetControlInstructionalButton(0, functions.GetKey(key).joaat, 1), "t_", ""), text)
+            text = string.format("~b~[~s~%s~b~]~s~ %s", string.gsub(GetControlInstructionalButton(0, functions.GetKey(key).joaat, true), "t_", ""), text)
         else
-            text = string.format("[%s] %s", string.gsub(GetControlInstructionalButton(0, functions.GetKey(key).joaat, 1), "t_", ""), text)
+            text = string.format("[%s] %s", string.gsub(GetControlInstructionalButton(0, functions.GetKey(key).joaat, true), "t_", ""), text)
         end
     end
     currentHelptext = text
@@ -92,54 +92,58 @@ CreateThread(function()
     while true do
         Wait(250)
 
-        if currentHelptext then
-            if Config.HelpTextStyle == "3d-gta" then
-                local str = currentHelptext
-                local start, stop = string.find(currentHelptext, "~([^~]+)~")
-                if start and start > 1 then
-                    start = start - 2
-                    stop = stop + 2
-                    str = ""
-                    str = str .. string.sub(currentHelptext, 0, start) .. string.rep(" ", 3) .. string.sub(currentHelptext, start+2, stop-2) .. string.sub(currentHelptext, stop, #currentHelptext)
-                end
-                AddTextEntry(textEntry, str)
-            elseif Config.HelpTextStyle == "3d" then
-                AddTextEntry(textEntry, currentHelptext)
+        if not currentHelptext then
+            goto continue
+        end
 
-                local textSize = functions.GetTextSize({
-                    text = currentHelptext,
-                    size = fontSize,
-                    font = 4,
-                    wrap = wrap
-                })
-                width = textSize.x
-                height = textSize.y
+        if Config.HelpTextStyle == "3d-gta" then
+            local str = currentHelptext
+            local start, stop = string.find(currentHelptext, "~([^~]+)~")
+            if start and start > 1 then
+                start = start - 2
+                stop = stop + 2
+                str = ""
+                str = str .. string.sub(currentHelptext, 0, start) .. string.rep(" ", 3) .. string.sub(currentHelptext, start+2, stop-2) .. string.sub(currentHelptext, stop, #currentHelptext)
             end
+            AddTextEntry(textEntry, str)
+        elseif Config.HelpTextStyle == "3d" then
+            AddTextEntry(textEntry, currentHelptext)
 
-            while currentHelptext do
-                Wait(0)
+            local textSize = functions.GetTextSize({
+                text = currentHelptext,
+                size = fontSize,
+                font = 4,
+                wrap = wrap
+            })
+            width = textSize.x
+            height = textSize.y
+        end
 
-                if Config.HelpTextStyle == "3d-gta" then
-                    BeginTextCommandDisplayHelp(textEntry)
-                    EndTextCommandDisplayHelp(2, false, false, -1)
+        while currentHelptext do
+            Wait(0)
 
-                    SetFloatingHelpTextWorldPosition(1, currentCoords)
-                    SetFloatingHelpTextStyle(1, 1, 2, -1, 3, 0)
-                elseif Config.HelpTextStyle == "3d" then
-                    SetDrawOrigin(currentCoords)
+            if Config.HelpTextStyle == "3d-gta" then
+                BeginTextCommandDisplayHelp(textEntry)
+                EndTextCommandDisplayHelp(2, false, false, -1)
 
-                    BeginTextCommandDisplayText(textEntry)
-                    SetTextScale(fontSize, fontSize)
-                    SetTextWrap(0.0, wrap) -- TESTING
-                    SetTextCentre(1)
-                    SetTextFont(4)
-                    EndTextCommandDisplayText(0.0, 0.0)
+                SetFloatingHelpTextWorldPosition(1, currentCoords.x, currentCoords.y, currentCoords.z)
+                SetFloatingHelpTextStyle(1, 1, 2, -1, 3, 0)
+            elseif Config.HelpTextStyle == "3d" then
+                SetDrawOrigin(currentCoords.x, currentCoords.y, currentCoords.z, 0)
 
-                    DrawRect(0.0, height/2, math.min(wrap + 0.0015, width), height, 45, 45, 45, 150)
+                BeginTextCommandDisplayText(textEntry)
+                SetTextScale(fontSize, fontSize)
+                SetTextWrap(0.0, wrap) -- TESTING
+                SetTextCentre(true)
+                SetTextFont(4)
+                EndTextCommandDisplayText(0.0, 0.0)
 
-                    ClearDrawOrigin()
-                end
+                DrawRect(0.0, height/2, math.min(wrap + 0.0015, width), height, 45, 45, 45, 150)
+
+                ClearDrawOrigin()
             end
         end
+
+        ::continue::
     end
 end)

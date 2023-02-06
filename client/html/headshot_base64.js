@@ -26,19 +26,3 @@ function sendBase64Server(data) {
         });
     });
 }
-
-// window.addEventListener("message", function(event) {
-//     if (event.data.type === "convert_base64") {
-//         toDataUrl(event.data.img, function(base64) {
-//             fetch(`https://${GetParentResourceName()}/base64`, {
-//                 method: "POST",
-//                 headers: {"Content-Type": "application/json; charset=UTF-8"},
-//                 body: JSON.stringify({
-//                     base64: base64,
-//                     handle: event.data.handle,
-//                     id: event.data.id
-//                 })
-//             });
-//         });
-//     }
-// });

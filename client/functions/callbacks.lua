@@ -11,21 +11,19 @@ function functions.TriggerCallbackSync(callback, ...)
     local requestId = functions.GenerateUniqueKey(waitingCallbacks)
     local toreturn
 
+    local promise = promise.new()
     waitingCallbacks[requestId] = function(...)
-        toreturn = {...}
+        toreturn = { ... }
+        promise:resolve()
     end
     TriggerServerEvent("loaf_lib:trigger_callback", callback, requestId, ...)
-
-    while not toreturn do
-        Wait(0)
-    end
+    Citizen.Await(promise)
 
     return table.unpack(toreturn)
 end
 
-RegisterNetEvent("loaf_lib:callback_result")
-AddEventHandler("loaf_lib:callback_result", function(requestId, ...)
-    if waitingCallbacks[requestId] then 
+RegisterNetEvent("loaf_lib:callback_result", function(requestId, ...)
+    if waitingCallbacks[requestId] then
         waitingCallbacks[requestId](...)
         waitingCallbacks[requestId] = nil
     end

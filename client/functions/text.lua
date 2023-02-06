@@ -3,7 +3,7 @@ local nearbyTexts = {}
 
 function functions.GetTextSize(textData)
     if type(textData) ~= "table" then return vector2(0.0, 0.0) end
-    
+
     if textData.text then
         BeginTextCommandGetWidth("STRING")
         AddTextComponentSubstringPlayerName(textData.text)
@@ -12,7 +12,7 @@ function functions.GetTextSize(textData)
     end
     SetTextScale(textData.size or 0.35, textData.size or 0.35)
     SetTextFont(4)
-    local textWidth = EndTextCommandGetWidth(1)
+    local textWidth = EndTextCommandGetWidth(true)
     local width = textWidth + 0.0015
 
     local newlines = 0
@@ -34,7 +34,7 @@ end
 -- ADD MARKER
 function functions.Add3DText(textData)    
     local textId = functions.GenerateUniqueKey(texts)
-    
+
     texts[textId] = {
         coords = textData.coords or vector3(0.0, 0.0, 0.0),
         text = textData.text or "No text set.",
@@ -93,7 +93,7 @@ CreateThread(function()
                 end
                 Wait(0)
             end
-            
+
             nearbyTexts = newNearby
         end
     end
@@ -119,7 +119,7 @@ CreateThread(function()
                         local camCoords = GetFinalRenderedCamCoord()
                         local dist = #(camCoords - text.coords)
                         local size = 1/(2 * math.abs(math.tan(math.rad(fov)/2)) * dist) / text.initialSize
-                        
+
                         text.size = math.min(0.8, size)
 
                         text.textSize = functions.GetTextSize({
@@ -148,12 +148,12 @@ CreateThread(function()
                 if texts[textId] then
                     local text = texts[textId]
                     if #(selfCoords - text.coords) <= text.viewDistance then
-                        SetDrawOrigin(text.coords)
+                        SetDrawOrigin(text.coords.x, text.coords.y, text.coords.z, 0)
 
                         BeginTextCommandDisplayText(text.textEntry)
                         SetTextScale(text.size, text.size)
                         SetTextWrap(0.0, text.wrap)
-                        SetTextCentre(1)
+                        SetTextCentre(true)
                         SetTextFont(4)
                         EndTextCommandDisplayText(0.0, 0.0)
 
@@ -172,7 +172,7 @@ AddEventHandler("onResourceStop", function(resourceName)
         local textsRemoved = 0
         for textId, textData in pairs(texts) do
             if textData.creator == resourceName then
-                functions.Remove3DText(markerId)
+                functions.Remove3DText(textId)
                 textsRemoved += 1
             end
         end

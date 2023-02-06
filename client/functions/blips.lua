@@ -3,7 +3,11 @@ local blips = {}
 function functions.AddBlip(blipData)
     local id = functions.GenerateUniqueKey(blips)
 
-    local blip = AddBlipForCoord(blipData.coords or vector3(0.0, 0.0, 0.0))
+    local coords = blipData.coords
+    if not coords then
+        return
+    end
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(blip, blipData.sprite or 1)
     SetBlipColour(blip, blipData.colour or blipData.color or 0)
     SetBlipScale(blip, blipData.scale or 0.7)
@@ -12,9 +16,9 @@ function functions.AddBlip(blipData)
     if blipData.category then
         SetBlipCategory(blip, blipData.category)
     end
-    
+
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(blipData.label or id)
+    AddTextComponentSubstringPlayerName(blipData.label or id)
     EndTextCommandSetBlipName(blip)
 
     blipData.creator = GetInvokingResource()

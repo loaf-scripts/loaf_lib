@@ -2,7 +2,7 @@ local requests = {}
 
 local function ClearHeadshots()
     for i = 1, 32 do
-        if IsPedheadshotValid(i) then 
+        if IsPedheadshotValid(i) then
             UnregisterPedheadshot(i)
         end
     end
@@ -16,13 +16,13 @@ local function GetHeadshot(ped)
         while not IsPedheadshotReady(handle) or not IsPedheadshotValid(handle) do
             Wait(50)
             if GetGameTimer() >= timer then
-                return {success=false, error="Could not load ped headshot."}
+                return { success=false, error="Could not load ped headshot." }
             end
         end
 
         local txd = GetPedheadshotTxdString(handle)
         local url = string.format("https://nui-img/%s/%s", txd, txd)
-        return {success=true, url=url, txd=txd, handle=handle}
+        return { success=true, url=url, txd=txd, handle=handle }
     end
 end
 
@@ -43,10 +43,10 @@ function functions.GetBase64(ped)
         while not requests[requestId] do
             Wait(250)
             if GetGameTimer() >= timer then
-                return {success=false, error="Waiting for base64 conversion timed out."}
+                return { success=false, error="Waiting for base64 conversion timed out." }
             end
         end
-        return {success=true, base64=requests[requestId]}
+        return { success=true, base64=requests[requestId] }
     else
         return headshot
     end
