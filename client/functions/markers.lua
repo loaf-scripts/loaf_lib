@@ -149,11 +149,13 @@ CreateThread(function()
 
                 if insideMarker then
                     newInside[markerId] = true
-                    if markerData.text then
-                        functions.DrawHelpText(markerData.text, markerData.coords + vector3(0.0, 0.0, 1.0), markerData.key)
-                    end
-                    if markers[markerId].callbacks.onEnter then
-                        markers[markerId].callbacks.onEnter(markerData.callbackData.enter, markerData)
+                    if not insideMarkers[markerId] then
+                        if markerData.text then
+                            functions.DrawHelpText(markerData.text, markerData.coords + vector3(0.0, 0.0, 1.0), markerData.key)
+                        end
+                        if markers[markerId].callbacks.onEnter then
+                            markers[markerId].callbacks.onEnter(markerData.callbackData.enter, markerData)
+                        end
                     end
                 elseif not insideMarker and insideMarkers[markerId] then
                     if markerData.text then
