@@ -19,7 +19,10 @@ local function GetPlayerPicture(source)
     end
     local url
     PerformHttpRequest("https://steamcommunity.com/profiles/" .. tonumber(steam, 16), function(_, text, _) 
-        if not text then url = false end
+        if not text then 
+            url = false 
+            return
+        end
         url = text:match('<meta name="twitter:image" content="(.-)"')
     end, "GET")
     while url == nil do
